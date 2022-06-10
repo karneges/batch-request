@@ -71,7 +71,7 @@ func (b *BatchRequestService) GetTransactions(signatures []solana.Signature) (ma
 }
 
 type GetTransaction2Params struct {
-	Commitment string
+	Commitment rpc.CommitmentType
 }
 
 func (b *BatchRequestService) GetTransactions2(signatures []solana.Signature, params GetTransaction2Params) (map[solana.Signature]*rpc.GetTransactionResult, error) {
