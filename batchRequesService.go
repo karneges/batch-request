@@ -68,3 +68,36 @@ func (b *BatchRequestService) GetTransactions(signatures []solana.Signature) (ma
 	})
 	return outMap, nil
 }
+
+type GetTransaction2Params struct {
+	commitment string
+}
+
+func (b *BatchRequestService) GetTransactions2(signatures []solana.Signature, params GetTransaction2Params) (map[solana.Signature]*rpc.GetTransactionResult, error) {
+	outMap := make(map[solana.Signature]*rpc.GetTransactionResult)
+	batch, err := b.client.CallBatch(context.TODO(), lo.Map(signatures, func(t solana.Signature, i int) *jsonrpc.RPCRequest {
+		return jsonrpc.NewRequest(
+			"getTransaction",
+			[]interface{}{
+				t,
+				rpc.M{"commitment": params.commitment},
+			},
+		)
+	}),
+	)
+	if err != nil {
+		return outMap, err
+	}
+	if len(signatures) != len(batch) {
+		return outMap, errors.New(fmt.Sprintf("Batch input/output mismatch %v vs %v", len(signatures), len(batch)))
+	}
+	lo.ForEach(batch, func(t *jsonrpc.RPCResponse, i int) {
+		var out *rpc.GetTransactionResult
+		err := t.GetObject(&out)
+		if err != nil {
+			return
+		}
+		outMap[signatures[t.ID]] = out
+	})
+	return outMap, nil
+}
