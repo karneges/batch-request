@@ -23,6 +23,7 @@ func New(endPoint string) *BatchRequestService {
 type BatchRequester interface {
 	GetSignaturesForAddresses(accounts []solana.PublicKey) (map[solana.PublicKey][]*rpc.TransactionSignature, error)
 	GetTransactions(signatures []solana.Signature) (map[solana.Signature]*rpc.TransactionWithMeta, error)
+	GetTransactions2(signatures []solana.Signature, params GetTransaction2Params) (map[solana.Signature]*rpc.GetTransactionResult, error)
 }
 
 func (b *BatchRequestService) GetSignaturesForAddresses(accounts []solana.PublicKey) (map[solana.PublicKey][]*rpc.TransactionSignature, error) {
